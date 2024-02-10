@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Frame Extraction Service</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Add this new style for the spinner */
+        .loader {
+            border: 6px solid #f3f3f3; /* Light grey */
+            border-top: 6px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -25px 0 0 -25px; /* Offset by half the width/height */
+            display: none; /* Hidden by default */
+        }
+
+        /* Spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <!-- Navbar content -->
+    </nav>
+    <header class="header">
+        <h1>Create a tutorial video from your screen recording</h1>
+        <p>Improve user experience and retention by adding chapters to videos.</p>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="prompt">Enter your prompt:</label>
+            <textarea id="prompt" name="prompt"></textarea><br><br>
+            <input type="file" name="video">
+            <button type="submit" class="button upload">Upload</button>
+        </form>
+    </header>
+    <div class="content">
+        <!-- Content goes here -->
+    </div>
+    <footer>
+        <!-- Footer goes here -->
+    </footer>
+    <div id="openai-response">
+        <h2>OpenAI Response</h2>
+        <div id="tutorialTextContainer"></div>
+    </div>
+    <div class="loader" id="loader"></div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block'; // Show the loader
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                loader.style.display = 'none'; // Hide the loader
+                const tutorialTextContainer = document.getElementById('tutorialTextContainer');
+                tutorialTextContainer.textContent = data.tutorial_text || "No tutorial text generated.";
+            }).catch(error => {
+                loader.style.display = 'none'; // Hide the loader
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
